@@ -10,10 +10,9 @@ import SwiftUI
 
 struct MealDetailView: View {
     let mealID: String
-    @State private var mealDetail: MealDetail?
-    @State private var isLoading = true
+    @EnvironmentObject var api: RecipeAPI
     @Environment(\.managedObjectContext) private var viewContext
-    
+
     @FetchRequest(
         entity: FavoriteDessert.entity(),
         sortDescriptors: []
@@ -26,7 +25,7 @@ struct MealDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
-                if let mealDetail = mealDetail {
+                if let mealDetail = api.mealDetail {
                     AsyncImage(url: URL(string: mealDetail.strMealThumb)) { image in
                         image.resizable()
                             .aspectRatio(contentMode: .fill)
@@ -72,8 +71,7 @@ struct MealDetailView: View {
                         .font(.custom("Avenir-Light", size: 18))
                         .foregroundColor(.darkGreen)
                     
-                    
-                } else if isLoading {
+                } else if api.isLoadingDetail {
                     ProgressView("Loading...")
                         .scaleEffect(1.5, anchor: .center)
                 }
@@ -81,22 +79,11 @@ struct MealDetailView: View {
             .padding()
         }
         .navigationTitle("Recipe Details")
-        .onAppear(perform: fetchMealDetails)
-    }
-    
-    private func fetchMealDetails() {
-        guard let url = URL(string: "https://themealdb.com/api/json/v1/1/lookup.php?i=\(mealID)") else { return }
-        
-        URLSession.shared.dataTask(with: url) { data, response, error in
-            if let data = data {
-                if let mealDetailResponse = try? JSONDecoder().decode(MealDetailResponse.self, from: data) {
-                    DispatchQueue.main.async {
-                        self.mealDetail = mealDetailResponse.meals.first
-                        self.isLoading = false
-                    }
-                }
+        .onAppear(perform: {
+            Task {
+                try await api.fetchMealDetails(mealID: mealID)
             }
-        }.resume()
+        })
     }
     
     private func toggleFavorite() {
@@ -108,7 +95,7 @@ struct MealDetailView: View {
     }
     
     private func addFavorite() {
-        guard let mealDetail = mealDetail else { return }
+        guard let mealDetail = api.mealDetail else { return }
         let favorite = FavoriteDessert(context: viewContext)
         favorite.idMeal = mealDetail.idMeal
         favorite.strMeal = mealDetail.strMeal

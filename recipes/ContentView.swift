@@ -9,6 +9,9 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
+    
+    @EnvironmentObject var api: RecipeAPI
+    
     var body: some View {
         NavigationView {
             LandingView()
@@ -21,6 +24,7 @@ struct ContentView_Previews: PreviewProvider {
     
     static var previews: some View {
         ContentView()
+            .environmentObject(RecipeAPI())
             .environment(\.managedObjectContext, viewContext)
     }
 }

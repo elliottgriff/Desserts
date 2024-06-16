@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		630DA06F2C1F3A6300359F98 /* RecipeAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 630DA06E2C1F3A6300359F98 /* RecipeAPI.swift */; };
 		63D7BA8D2C16343A007512FB /* RecipesApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D7BA8C2C16343A007512FB /* RecipesApp.swift */; };
 		63D7BA8F2C16343A007512FB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63D7BA8E2C16343A007512FB /* ContentView.swift */; };
 		63D7BA912C16343B007512FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 63D7BA902C16343B007512FB /* Assets.xcassets */; };
@@ -42,6 +43,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		630DA06E2C1F3A6300359F98 /* RecipeAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeAPI.swift; sourceTree = "<group>"; };
 		63D7BA892C16343A007512FB /* recipes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = recipes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		63D7BA8C2C16343A007512FB /* RecipesApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipesApp.swift; sourceTree = "<group>"; };
 		63D7BA8E2C16343A007512FB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -155,6 +157,7 @@
 			children = (
 				63D7BABE2C16362C007512FB /* Meal.swift */,
 				63D7BAC22C163667007512FB /* MealDetail.swift */,
+				630DA06E2C1F3A6300359F98 /* RecipeAPI.swift */,
 			);
 			path = api;
 			sourceTree = "<group>";
@@ -296,6 +299,7 @@
 				63D7BAC52C163933007512FB /* LandingView.swift in Sources */,
 				63D7BA8F2C16343A007512FB /* ContentView.swift in Sources */,
 				63D7BAC32C163667007512FB /* MealDetail.swift in Sources */,
+				630DA06F2C1F3A6300359F98 /* RecipeAPI.swift in Sources */,
 				63D7BA8D2C16343A007512FB /* RecipesApp.swift in Sources */,
 				63D7BA992C16343B007512FB /* FavoriteDessert.xcdatamodeld in Sources */,
 				63D7BACB2C1647F2007512FB /* Persistence.swift in Sources */,

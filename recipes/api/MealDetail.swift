@@ -7,55 +7,101 @@
 
 import Foundation
 
-struct MealDetail: Decodable {
-    let idMeal: String
-    let strMeal: String
-    let strInstructions: String
-    let strMealThumb: String
+public final class MealDetail: Codable, Hashable {
+    public let idMeal: String
+    public let strMeal: String
+    public let strInstructions: String
+    public let strMealThumb: String
+
+    private var dynamicValues: [String: String?] = [:]
     
-    private let strIngredient1: String?
-    private let strIngredient2: String?
-    private let strIngredient3: String?
-    private let strIngredient4: String?
-    private let strIngredient5: String?
-    private let strIngredient6: String?
-    private let strIngredient7: String?
-    private let strIngredient8: String?
-    private let strIngredient9: String?
-    private let strIngredient10: String?
-    private let strMeasure1: String?
-    private let strMeasure2: String?
-    private let strMeasure3: String?
-    private let strMeasure4: String?
-    private let strMeasure5: String?
-    private let strMeasure6: String?
-    private let strMeasure7: String?
-    private let strMeasure8: String?
-    private let strMeasure9: String?
-    private let strMeasure10: String?
-    
-    var ingredients: [String] {
-        let ingredientsList = [
-            (strIngredient1, strMeasure1),
-            (strIngredient2, strMeasure2),
-            (strIngredient3, strMeasure3),
-            (strIngredient4, strMeasure4),
-            (strIngredient5, strMeasure5),
-            (strIngredient6, strMeasure6),
-            (strIngredient7, strMeasure7),
-            (strIngredient8, strMeasure8),
-            (strIngredient9, strMeasure9),
-            (strIngredient10, strMeasure10)
-        ]
+    public var ingredients: [String] {
+        var ingredientsList: [String] = []
         
-        return ingredientsList.compactMap {
-            guard let ingredient = $0.0, !ingredient.isEmpty else { return nil }
-            let measure = $0.1 ?? ""
-            return "\(ingredient) - \(measure)"
+        var index = 1
+        while let ingredient = dynamicValues["strIngredient\(index)"] as? String, !ingredient.isEmpty {
+            let measure = dynamicValues["strMeasure\(index)"] as? String ?? ""
+            ingredientsList.append("\(ingredient) - \(measure)")
+            index += 1
         }
+        
+        return ingredientsList
+    }
+
+    private enum StaticCodingKeys: String, CodingKey, CaseIterable {
+        case idMeal, strMeal, strInstructions, strMealThumb
+    }
+
+    public init(idMeal: String, strMeal: String, strInstructions: String, strMealThumb: String, dynamicValues: [String: String?]) {
+        self.idMeal = idMeal
+        self.strMeal = strMeal
+        self.strInstructions = strInstructions
+        self.strMealThumb = strMealThumb
+        self.dynamicValues = dynamicValues
+    }
+
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: StaticCodingKeys.self)
+        idMeal = try container.decode(String.self, forKey: .idMeal)
+        strMeal = try container.decode(String.self, forKey: .strMeal)
+        strInstructions = try container.decode(String.self, forKey: .strInstructions)
+        strMealThumb = try container.decode(String.self, forKey: .strMealThumb)
+        
+        let dynamicContainer = try decoder.container(keyedBy: DynamicCodingKeys.self)
+        for key in dynamicContainer.allKeys {
+            if key.stringValue.hasPrefix("strIngredient") || key.stringValue.hasPrefix("strMeasure") {
+                let value = try dynamicContainer.decodeIfPresent(String.self, forKey: key)
+                dynamicValues[key.stringValue] = value
+            }
+        }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: StaticCodingKeys.self)
+        try container.encode(idMeal, forKey: .idMeal)
+        try container.encode(strMeal, forKey: .strMeal)
+        try container.encode(strInstructions, forKey: .strInstructions)
+        try container.encode(strMealThumb, forKey: .strMealThumb)
+        
+        var dynamicContainer = encoder.container(keyedBy: DynamicCodingKeys.self)
+        for (key, value) in dynamicValues {
+            try dynamicContainer.encodeIfPresent(value, forKey: DynamicCodingKeys(stringValue: key)!)
+        }
+    }
+    
+    private struct DynamicCodingKeys: CodingKey {
+        var stringValue: String
+        
+        init?(stringValue: String) {
+            self.stringValue = stringValue
+        }
+        
+        var intValue: Int? {
+            return nil
+        }
+        
+        init?(intValue: Int) {
+            return nil
+        }
+    }
+
+    public static func == (lhs: MealDetail, rhs: MealDetail) -> Bool {
+        lhs.idMeal == rhs.idMeal &&
+        lhs.strMeal == rhs.strMeal &&
+        lhs.strInstructions == rhs.strInstructions &&
+        lhs.strMealThumb == rhs.strMealThumb &&
+        lhs.dynamicValues == rhs.dynamicValues
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(idMeal)
+        hasher.combine(strMeal)
+        hasher.combine(strInstructions)
+        hasher.combine(strMealThumb)
+        hasher.combine(dynamicValues)
     }
 }
 
-struct MealDetailResponse: Decodable {
-    let meals: [MealDetail]
+public struct MealDetailResponse: Codable {
+    public let meals: [MealDetail]
 }
